@@ -6,7 +6,6 @@
 - `proxy-groups`
 
 支持：
-- 导入 YAML（反向解析回填表单）
 - 可视化编辑
 - 导出 YAML
 
