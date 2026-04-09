@@ -523,3 +523,21 @@ document.getElementById("copyBtn").addEventListener("click", async () => {
     alert("已复制");
   }
 });
+
+document.getElementById("downloadBtn").addEventListener("click", () => {
+  const content = yamlOutputEl.value.trim();
+  if (!content) {
+    alert("请先生成 YAML");
+    return;
+  }
+
+  const blob = new Blob([yamlOutputEl.value], { type: "application/x-yaml;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "SKK规则集.yaml";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+});
