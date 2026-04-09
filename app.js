@@ -524,6 +524,32 @@ document.getElementById("copyBtn").addEventListener("click", async () => {
   }
 });
 
+function downloadTextFile(content, filename) {
+  const blob = new Blob([content], { type: "application/x-yaml;charset=utf-8" });
+
+  // Legacy Edge fallback.
+  if (typeof navigator.msSaveOrOpenBlob === "function") {
+    navigator.msSaveOrOpenBlob(blob, filename);
+    return;
+  }
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.style.display = "none";
+  document.body.appendChild(link);
+
+  // Delay revoke to avoid Firefox/Safari occasionally canceling the download.
+  requestAnimationFrame(() => {
+    link.click();
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+      link.remove();
+    }, 1000);
+  });
+}
+
 document.getElementById("downloadBtn").addEventListener("click", () => {
   const content = yamlOutputEl.value.trim();
   if (!content) {
@@ -531,13 +557,5 @@ document.getElementById("downloadBtn").addEventListener("click", () => {
     return;
   }
 
-  const blob = new Blob([yamlOutputEl.value], { type: "application/x-yaml;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "SKK规则集.yaml";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
+  downloadTextFile(yamlOutputEl.value, "clash-config.yaml");
 });
