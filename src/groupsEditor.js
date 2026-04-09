@@ -24,22 +24,25 @@ export function renderGroups(container, state, onChange) {
       </div>
       <textarea data-k="list">${esc((g.list || []).join('\n'))}</textarea>
     `;
-    el.querySelectorAll('input,select,textarea').forEach(inp => {
+    el.querySelectorAll('input,select,textarea').forEach((inp) => {
       inp.addEventListener('input', () => {
         const k = inp.dataset.k;
         if (k === 'interval' || k === 'tolerance') g[k] = inp.value === '' ? undefined : Number(inp.value);
-        else if (k === 'list') g.list = inp.value.split('\n').map(v => v.trim()).filter(Boolean);
+        else if (k === 'list') g.list = inp.value.split('\n').map((v) => v.trim()).filter(Boolean);
         else g[k] = inp.value;
         onChange();
       });
     });
+
     el.querySelector('[data-act="del"]').addEventListener('click', () => {
       state.groups.splice(idx, 1);
       onChange();
     });
+
     container.appendChild(el);
   });
 }
+
 function esc(s) {
-  return String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+  return String(s);
 }

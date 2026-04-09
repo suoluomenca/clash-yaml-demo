@@ -13,7 +13,7 @@ export function renderProviders(container, state, onChange) {
         <button data-act="del">删除</button>
       </div>
     `;
-    el.querySelectorAll('input').forEach(inp => {
+    el.querySelectorAll('input').forEach((inp) => {
       inp.addEventListener('input', () => {
         const k = inp.dataset.k;
         if (k === 'interval') p[k] = Number(inp.value || 0);
@@ -21,6 +21,7 @@ export function renderProviders(container, state, onChange) {
         else p[k] = inp.value;
         onChange();
       });
+
       if (inp.type === 'checkbox') {
         inp.addEventListener('change', () => {
           p.inheritP = inp.checked;
@@ -28,13 +29,16 @@ export function renderProviders(container, state, onChange) {
         });
       }
     });
+
     el.querySelector('[data-act="del"]').addEventListener('click', () => {
       state.providers.splice(idx, 1);
       onChange();
     });
+
     container.appendChild(el);
   });
 }
+
 function esc(s) {
-  return String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+  return String(s);
 }
