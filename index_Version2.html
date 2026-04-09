@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clash YAML 可视化编辑 Demo</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto; margin: 20px; }
+    .row { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0; }
+    .card { border:1px solid #ddd; border-radius:10px; padding:12px; margin-bottom:10px; }
+    textarea { width:100%; min-height:180px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    input, select, button { padding:8px; border:1px solid #ccc; border-radius:8px; }
+    h2 { margin-top:24px; }
+    .muted { color:#666; font-size:13px; }
+  </style>
+</head>
+<body>
+  <h1>Clash YAML 片段编辑器</h1>
+  <p class="muted">支持：导入 YAML -> 回填表单 -> 编辑 -> 导出 YAML（仅 proxy-providers / proxy-groups）</p>
+
+  <h2>导入 YAML</h2>
+  <textarea id="yamlInput" placeholder="把现有 YAML 粘贴到这里（至少包含 proxy-providers/proxy-groups）"></textarea>
+  <div class="row">
+    <button id="importBtn">导入并回填表单</button>
+  </div>
+
+  <h2>Proxy Providers</h2>
+  <div id="providers"></div>
+  <div class="row"><button id="addProvider">+ 添加 Provider</button></div>
+
+  <h2>Proxy Groups</h2>
+  <div id="groups"></div>
+  <div class="row"><button id="addGroup">+ 添加 Group</button></div>
+
+  <h2>导出 YAML</h2>
+  <div class="row">
+    <button id="exportBtn">生成 YAML</button>
+    <button id="copyBtn">复制</button>
+  </div>
+  <textarea id="yamlOutput" placeholder="生成结果"></textarea>
+
+  <script type="module" src="./src/app.js"></script>
+</body>
+</html>
