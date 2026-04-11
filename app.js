@@ -268,7 +268,7 @@ function renderProviders(container, onChange) {
           ).join("")}
         </select>
         <input value="${esc(previewKey)}" placeholder="自动生成 key" readonly />
-        <button data-act="del">删除</button>
+        <button data-act="del" class="secondary">删除</button>
       </div>
       <div class="row">
         <input data-k="comment" value="${esc(p.comment || "")}" placeholder="注释" />

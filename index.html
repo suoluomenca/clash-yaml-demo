@@ -1,24 +1,223 @@
 <!doctype html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Clash YAML 模板生成器</title>
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto; margin: 20px; }
-    .row { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0; }
-    .card { border:1px solid #ddd; border-radius:10px; padding:12px; margin-bottom:10px; }
-    textarea { width:100%; min-height:180px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-    input, select, button { padding:8px; border:1px solid #ccc; border-radius:8px; }
-    h2 { margin-top:24px; }
-    .muted { color:#666; font-size:13px; }
+    /* Typography System */
+    :root {
+      --apple-blue: #0071e3;
+      --bg-light: #f5f5f7;
+      --text-main: #1d1d1f;
+      --text-muted: rgba(0, 0, 0, 0.48);
+      --card-bg: #ffffff;
+      --card-shadow: rgba(0, 0, 0, 0.22) 3px 5px 30px 0px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-light);
+      color: var(--text-main);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+      font-size: 17px;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: "SF Pro Display", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    h1 {
+      font-size: 56px;
+      line-height: 1.07;
+      letter-spacing: -0.28px;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 40px;
+      line-height: 1.10;
+      margin-top: 60px;
+      margin-bottom: 24px;
+    }
+
+    p.subtitle {
+      font-size: 21px;
+      line-height: 1.19;
+      letter-spacing: 0.231px;
+      font-weight: 400;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .muted {
+      color: var(--text-muted);
+      font-size: 14px;
+      letter-spacing: -0.224px;
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 12px 0;
+      align-items: center;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: none;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.2s ease;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 240px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      padding: 16px;
+      border-radius: 11px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      background-color: #ffffff;
+      font-size: 14px;
+      line-height: 1.4;
+      resize: vertical;
+    }
+
+    textarea:focus {
+      outline: 2px solid var(--apple-blue);
+      border-color: transparent;
+    }
+
+    input,
+    select {
+      padding: 12px 16px;
+      border: 3px solid rgba(0, 0, 0, 0.04);
+      border-radius: 11px;
+      background-color: #fafafc;
+      font-family: inherit;
+      font-size: 17px;
+      color: var(--text-main);
+      transition: all 0.2s ease;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: transparent;
+      box-shadow: 0 0 0 2px var(--apple-blue);
+      background-color: #ffffff;
+    }
+
+    button {
+      padding: 8px 15px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background-color: var(--apple-blue);
+      color: #ffffff;
+      font-family: "SF Pro Text", inherit;
+      font-size: 17px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    button:hover {
+      filter: brightness(1.1);
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button:focus {
+      outline: 2px solid var(--apple-blue);
+      outline-offset: 2px;
+    }
+
+    /* Secondary buttons (like delete or transparent actions) */
+    button.secondary {
+      background-color: #fafafc;
+      color: rgba(0, 0, 0, 0.8);
+      border: 3px solid rgba(0, 0, 0, 0.04);
+      border-radius: 11px;
+      padding: 6px 14px;
+    }
+
+    button.secondary:hover {
+      background-color: #ededf2;
+    }
+
+    button.pill-link:hover {
+      text-decoration: underline;
+      background-color: rgba(0, 102, 204, 0.05) !important;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin: 40px 0;
+    }
+
+    /* Nav bar glass effect preview */
+    .nav-glass {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .nav-glass-title {
+      font-size: 12px;
+      color: #ffffff;
+      font-weight: 400;
+      opacity: 0.8;
+      letter-spacing: -0.12px;
+    }
   </style>
 </head>
-<body>
-  <h1>Clash YAML 模板生成器</h1>
-  <p class="muted">支持：可视化编辑 Proxy Providers，并将生成的 proxy-providers / proxy-groups 覆盖进内嵌模板后导出完整 YAML；可直接双击打开 HTML 使用，无需本地服务器</p>
 
-  <textarea id="templateYaml" hidden>mixed-port: 7890
+<body>
+  <div class="nav-glass">
+    <div class="nav-glass-title">Clash Generator</div>
+  </div>
+
+  <div class="container">
+    <h1>Clash YAML</h1>
+    <p class="subtitle">可视化编辑 Proxy Providers，生成优雅配置</p>
+
+    <textarea id="templateYaml" hidden>mixed-port: 7890
 allow-lan: true
 bind-address: '*'
 mode: rule
@@ -817,18 +1016,25 @@ rules:
   - 'MATCH,🐟 漏网之鱼'
 </textarea>
 
-  <h2>Proxy Providers</h2>
-  <div id="providers"></div>
-  <div class="row"><button id="addProvider">+ 添加 Provider</button></div>
+    <h2>Proxy Providers</h2>
+    <div id="providers"></div>
+    <div class="row">
+      <button id="addProvider" class="secondary">+ 添加 Provider</button>
+    </div>
 
-  <h2>导出完整 YAML</h2>
-  <div class="row">
-    <button id="exportBtn">生成完整 YAML</button>
-    <button id="copyBtn">复制</button>
-    <button id="downloadBtn">下载 YAML</button>
+    <h2>导出完整 YAML</h2>
+    <div class="top-actions">
+      <button id="exportBtn" style="border-radius: 980px; padding: 12px 24px; font-weight: 600;">生成完整 YAML</button>
+      <button id="copyBtn" class="pill-link"
+        style="border-radius: 980px; padding: 12px 24px; background: transparent; border: 1px solid #0066cc; color: #0066cc;">复制</button>
+      <button id="downloadBtn" class="pill-link"
+        style="border-radius: 980px; padding: 12px 24px; background: transparent; border: 1px solid #0066cc; color: #0066cc;">下载
+        YAML</button>
+    </div>
+    <textarea id="yamlOutput" placeholder="生成后的完整模板 YAML 将在这里显示"></textarea>
   </div>
-  <textarea id="yamlOutput" placeholder="生成后的完整模板 YAML"></textarea>
 
   <script src="./app.js"></script>
 </body>
+
 </html>
