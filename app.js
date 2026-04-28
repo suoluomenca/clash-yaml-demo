@@ -42,9 +42,7 @@ function normalizeProvider(provider) {
   const next = { ...provider };
   const parsed = parseProviderKey(next.key);
 
-  if (!next.namePart) {
-    next.namePart = parsed.namePart || "";
-  }
+  next.namePart = sanitizeNamePart(next.namePart || parsed.namePart || "");
 
   const fallbackNodeCode = next.nodeCode || next.countryCode || parsed.nodeCode || "jp";
   next.nodeCode = String(fallbackNodeCode || "jp").toLowerCase();
@@ -257,7 +255,17 @@ function renderProviders(container, onChange) {
     el.className = "card";
     el.innerHTML = `
       <div class="row">
-        <input data-k="namePart" value="${esc(p.namePart || "")}" placeholder="名字，如 A / B / C" />
+        <div style="flex: 1 1 430px; min-width: min(100%, 430px);">
+          <input
+            data-k="namePart"
+            value="${esc(p.namePart || "")}"
+            placeholder="名字，如 A / B / C，仅支持字母、数字、_、-"
+            pattern="[A-Za-z0-9_-]*"
+            title="只允许 ASCII 字母、数字、下划线和短横线"
+            style="width: 100%;"
+          />
+          <div class="muted" style="margin-top: 6px;">仅支持字母、数字、_、-</div>
+        </div>
         <select data-k="nodeCode">
           ${NODE_CODE_OPTIONS.map(
             (option) => `
@@ -274,21 +282,38 @@ function renderProviders(container, onChange) {
         <input data-k="comment" value="${esc(p.comment || "")}" placeholder="注释" />
         <input data-k="url" value="${esc(p.url || "")}" placeholder="url" style="min-width:340px;" />
       </div>
-      <div class="muted">独立节点组预览：${esc(getProviderGroupName(p))}</div>
+      <div class="muted">独立节点组预览：<span data-preview-group>${esc(getProviderGroupName(p))}</span></div>
     `;
 
-    el.querySelectorAll("input[data-k],select[data-k]").forEach((inp) => {
-      inp.addEventListener("input", () => {
-        const k = inp.dataset.k;
-        p[k] = inp.value;
+    const previewKeyInput = el.querySelector("input[readonly]");
+    const previewGroupEl = el.querySelector("[data-preview-group]");
+    const updateProviderField = (inp) => {
+      const k = inp.dataset.k;
 
-        if (k === "nodeCode") {
-          p.nodeCode = String(inp.value || "jp").toLowerCase();
+      if (k === "namePart") {
+        const sanitized = sanitizeNamePart(inp.value);
+        if (inp.value !== sanitized) {
+          inp.value = sanitized;
         }
+      }
 
-        p.key = buildProviderKey(p.namePart, p.nodeCode);
-        onChange();
-      });
+      p[k] = inp.value;
+
+      if (k === "nodeCode") {
+        p.nodeCode = String(inp.value || "jp").toLowerCase();
+      }
+
+      p.key = buildProviderKey(p.namePart, p.nodeCode);
+      previewKeyInput.value = p.key;
+      previewGroupEl.textContent = getProviderGroupName(p);
+    };
+
+    el.querySelectorAll("input[data-k]").forEach((inp) => {
+      inp.addEventListener("input", () => updateProviderField(inp));
+    });
+
+    el.querySelectorAll("select[data-k]").forEach((inp) => {
+      inp.addEventListener("change", () => updateProviderField(inp));
     });
 
     el.querySelector("[data-act='del']").addEventListener("click", () => {
