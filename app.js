@@ -485,6 +485,14 @@ function esc(s) {
 const providersEl = document.getElementById("providers");
 const yamlOutputEl = document.getElementById("yamlOutput");
 
+function getYamlOutputText() {
+  return yamlOutputEl.textContent || "";
+}
+
+function setYamlOutputText(value) {
+  yamlOutputEl.textContent = value || "";
+}
+
 function rerender() {
   state.providers = state.providers.map((provider) => normalizeProvider(provider));
   renderProviders(providersEl, rerender);
@@ -532,7 +540,7 @@ document.getElementById("addProvider").addEventListener("click", () => {
 document.getElementById("exportBtn").addEventListener("click", async () => {
   try {
     const templateText = await loadTemplateText();
-    yamlOutputEl.value = mergeYamlIntoTemplate(state, templateText);
+    setYamlOutputText(mergeYamlIntoTemplate(state, templateText));
   } catch (err) {
     console.error(err);
     alert(`生成失败：${err.message}`);
@@ -540,18 +548,23 @@ document.getElementById("exportBtn").addEventListener("click", async () => {
 });
 
 document.getElementById("copyBtn").addEventListener("click", async () => {
-  if (!yamlOutputEl.value.trim()) {
+  const content = getYamlOutputText();
+  if (!content.trim()) {
     alert("请先生成 YAML");
     return;
   }
 
   try {
-    await navigator.clipboard.writeText(yamlOutputEl.value);
+    await navigator.clipboard.writeText(content);
     alert("已复制");
   } catch (err) {
-    yamlOutputEl.focus();
-    yamlOutputEl.select();
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(yamlOutputEl);
+    selection.removeAllRanges();
+    selection.addRange(range);
     document.execCommand("copy");
+    selection.removeAllRanges();
     alert("已复制");
   }
 });
@@ -583,11 +596,11 @@ function downloadTextFile(content, filename) {
 }
 
 document.getElementById("downloadBtn").addEventListener("click", () => {
-  const content = yamlOutputEl.value.trim();
+  const content = getYamlOutputText();
   if (!content) {
     alert("请先生成 YAML");
     return;
   }
 
-  downloadTextFile(yamlOutputEl.value, "clash-config.yaml");
+  downloadTextFile(content, "clash-config.yaml");
 });
