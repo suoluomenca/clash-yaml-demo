@@ -95,6 +95,60 @@
       transition: transform 0.2s ease;
     }
 
+    .provider-card {
+      display: grid;
+      gap: 16px;
+    }
+
+    .provider-main-grid {
+      display: grid;
+      grid-template-columns: minmax(260px, 1.8fr) minmax(190px, 0.8fr) minmax(160px, 0.7fr) auto;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .provider-detail-grid {
+      display: grid;
+      grid-template-columns: minmax(220px, 0.8fr) minmax(320px, 1.2fr) 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .provider-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .provider-field input,
+    .provider-field select {
+      width: 100%;
+    }
+
+    .provider-hint {
+      min-height: 20px;
+    }
+
+    .provider-delete {
+      min-height: 53px;
+      white-space: nowrap;
+    }
+
+    .provider-preview {
+      margin-top: -2px;
+    }
+
+    @media (max-width: 820px) {
+      .provider-main-grid,
+      .provider-detail-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .provider-delete {
+        justify-self: start;
+      }
+    }
+
     textarea {
       width: 100%;
       min-height: 240px;

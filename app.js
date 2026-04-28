@@ -252,37 +252,44 @@ function renderProviders(container, onChange) {
     const previewKey = buildProviderKey(p.namePart, p.nodeCode);
 
     const el = document.createElement("div");
-    el.className = "card";
+    el.className = "card provider-card";
     el.innerHTML = `
-      <div class="row">
-        <div style="flex: 1 1 430px; min-width: min(100%, 430px);">
+      <div class="provider-main-grid">
+        <div class="provider-field">
           <input
             data-k="namePart"
             value="${esc(p.namePart || "")}"
             placeholder="名字，如 A / B / C，仅支持字母、数字、_、-"
             pattern="[A-Za-z0-9_-]*"
             title="只允许 ASCII 字母、数字、下划线和短横线"
-            style="width: 100%;"
           />
-          <div class="muted" style="margin-top: 6px;">仅支持字母、数字、_、-</div>
+          <div class="muted provider-hint">仅支持字母、数字、_、-</div>
         </div>
-        <select data-k="nodeCode">
-          ${NODE_CODE_OPTIONS.map(
-            (option) => `
-            <option value="${option.code}" ${p.nodeCode === option.code ? "selected" : ""}>
-              ${option.flag} ${option.regionLabel} / ${option.nodeLabel} (${option.code})
-            </option>
-          `
-          ).join("")}
-        </select>
-        <input value="${esc(previewKey)}" placeholder="自动生成 key" readonly />
-        <button data-act="del" class="secondary">删除</button>
+        <div class="provider-field">
+          <select data-k="nodeCode">
+            ${NODE_CODE_OPTIONS.map(
+              (option) => `
+              <option value="${option.code}" ${p.nodeCode === option.code ? "selected" : ""}>
+                ${option.flag} ${option.regionLabel} / ${option.nodeLabel} (${option.code})
+              </option>
+            `
+            ).join("")}
+          </select>
+        </div>
+        <div class="provider-field">
+          <input value="${esc(previewKey)}" placeholder="自动生成 key" readonly />
+        </div>
+        <button data-act="del" class="secondary provider-delete">删除</button>
       </div>
-      <div class="row">
-        <input data-k="comment" value="${esc(p.comment || "")}" placeholder="注释" />
-        <input data-k="url" value="${esc(p.url || "")}" placeholder="url" style="min-width:340px;" />
+      <div class="provider-detail-grid">
+        <div class="provider-field">
+          <input data-k="comment" value="${esc(p.comment || "")}" placeholder="注释" />
+        </div>
+        <div class="provider-field">
+          <input data-k="url" value="${esc(p.url || "")}" placeholder="url" />
+        </div>
       </div>
-      <div class="muted">独立节点组预览：<span data-preview-group>${esc(getProviderGroupName(p))}</span></div>
+      <div class="muted provider-preview">独立节点组预览：<span data-preview-group>${esc(getProviderGroupName(p))}</span></div>
     `;
 
     const previewKeyInput = el.querySelector("input[readonly]");
